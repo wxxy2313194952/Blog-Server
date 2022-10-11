@@ -11,9 +11,9 @@ const jwt = require('jsonwebtoken');
 
 //导入全局配置文件
 const config = require('../config');
-const { response } = require('express');
+// const { response } = require('express');
 
-// 注册接口处理函数
+// 注册接口处理函数 
 exports.reguser = (req, res) => {
   // 接收表单数据
   // console.log(req.body);

@@ -79,9 +79,13 @@ app.use(DailyRouter)
 const TagRouter = require('./router/tag')
 app.use(TagRouter)
 
+// 引入更新日志模块
+const VerRouter = require('./router/version')
+app.use(VerRouter)
 
 
-app.use(express.json());
+
+
 // 定义错误级别中间件
 app.use((err, req, res, next) => {
   // 验证失败导致的错误

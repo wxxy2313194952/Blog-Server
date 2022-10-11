@@ -45,8 +45,13 @@ exports.getInfo = (req, res) => {
       // console.log(result[i - 1].pub_date);
       // console.log("当前");
       // console.log(Date.now());
+      // 大于四周
+      if (sjc >= 2419200000) {
+        let day_pub = date_now.diff(dayjs(result[i - 1].pub_date), 'month')
+        info.lastUpdate = `${day_pub}个月前`
+      }
       // 大于一周
-      if (sjc >= 604800000) {
+      if (sjc <= 2419200000) {
         let day_pub = date_now.diff(dayjs(result[i - 1].pub_date), 'week')
         info.lastUpdate = `${day_pub}星期前`
       }
