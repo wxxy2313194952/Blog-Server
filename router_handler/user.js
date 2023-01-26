@@ -33,7 +33,9 @@ exports.reguser = (req, res) => {
     const sql = 'insert into users_table set ?';
     db.query(sql, {
       username: userInfo.username,
-      password: userInfo.password
+      password: userInfo.password,
+      nickname: '大佬你好',
+      avatar: '/uploads/user_pic/mypice.jpg'
     }, (err, result) => {
       if (err) {
         return res.cc(err.message);
@@ -72,9 +74,6 @@ exports.login = (req, res) => {
     const user = {
       ...result[0],
       password: null,
-      qqid: null,
-      email: null,
-      user_pic: null,
     }
     // console.log(user);
     // 生成 token 字符串
@@ -95,11 +94,21 @@ exports.login = (req, res) => {
 
 // 获取用户信息
 exports.getUserInfo = (req, res) => {
-  console.log(req, user);
+  // console.log(req.host);
   res.send({
     code: 200,
     message: '获取用户信息成功！',
-    data: req.body,
+    data: {
+      ...req.user,
+      host: `http://${req.host}:3080`
+    }
   })
-  
+}
+
+// 退出登录
+exports.logout = (req, res) => {
+  res.send({
+    code: 200,
+    message: '退出登录成功',
+  })
 }

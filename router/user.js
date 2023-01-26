@@ -13,14 +13,16 @@ const { reg_login_schema } = require('../schema/user')
 
 
 // 登录接口
-router.post('/login', routerUser.login);
+router.post('/user/login', routerUser.login);
 
 // 注册接口
-router.post('/reguser', expressJoi(reg_login_schema), routerUser.reguser);
+router.post('/user/reguser', expressJoi(reg_login_schema), routerUser.reguser);
 
 // 获取用户信息接口
-router.get('/getuserinfo', routerUser.getUserInfo);
+router.get('/user/getinfo', routerUser.getUserInfo);
 
+// 退出登录
+router.post('/user/logout', routerUser.logout);
 
 // 暴露当前路由模块
 module.exports = router;

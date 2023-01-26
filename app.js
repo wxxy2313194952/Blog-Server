@@ -7,7 +7,8 @@ const app = express()
 //注册为全局中间件
 app.use(cors())
 
-
+// 托管静态数据
+app.use('/uploads', express.static('./uploads'))
 
 // 错误中间件使用:
 // 解析 FormData 格式的中间件uploads\user_pic\mypice.jpg
@@ -37,15 +38,15 @@ app.use((req, res, next) => {
 const config = require('./config')
 // 解析 token 的中间件
 const expressJWT = require('express-jwt')
-// 使用 .unless({ path: [/^\/api\//] }) 指定以 /api 开头的接口不需要进行 Token 的身份认证
-app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/api\/|^\/uploads\//] }))
+// unless指定以 /admin/user/login 和 /uploads/ 接口不需要进行 Token 身份认证
+app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/admin\/user\/login|^\/uploads\//] }))
 
 
 
 // 引入登录模块路由
 const userRouter = require('./router/user')
 // 注册登录模块路由
-app.use('/api',userRouter)
+app.use('/admin',userRouter)
 
 // 引入留言模块路由
 const commentRouter = require('./router/comment')

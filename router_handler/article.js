@@ -61,8 +61,8 @@ exports.addArticle = (req, res) => {
   }, err => {
     res.cc(err)
   })
-
 }
+
 // 文章详情界面获取文章信息
 exports.getArticle = (req, res) => {
   // 多表查询文章列表 sql 语句

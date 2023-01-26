@@ -16,7 +16,7 @@ exports.getInfo = (req, res) => {
   const sql = "select * from article_table where is_delete=0"
   new Promise((resolve, reject) => {
     const date = dayjs(new Date())
-    // console.log(date);
+    // console.log(req.headers['x-forwarded-for']);
     let day = date.diff('2022-05-10', 'day')
     let info = {
       //访问总量
