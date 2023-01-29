@@ -1,64 +1,84 @@
 // 文章路由模块处理函数
 
 // 导入数据库操作模块
-const db = require('../db/index');
+const db = require('../../db/index')
 
 // 导入处理路径的核心模块
 const path = require('path')
 
 // 引入时间day.js
-const dayjs = require('dayjs');
+const dayjs = require('dayjs')
 
-// 新增文章处理函数
+/**
+ * 文章处理函数
+ * 标签传递的JSON字符串，在后端进行处理
+ * 先入标签文章映射表 tag_relationship
+ * [{"id":1,"name":"标签一","type":"success"},
+ *  {"id":2,"name":"标签二","type":"success"},
+ *  {"id":3,"name":"标签三","type":"info"},
+ *  {"id":4,"name":"标签四","type":"warning"},
+ *  {"id":5,"name":"标签五","type":"danger"}]
+ */
 exports.addArticle = (req, res) => {
   if (!req.file || req.file.fieldname !== 'cover_img') return res.cc('文章封面是必选参数！')
   // TODO：证明数据都是合法的，可以进行后续业务逻辑的处理
   // 处理文章的信息对象
   // 时间
-
+  // console.log(req.file)
   let sjc = new Date()
-  let pub_date = sjc.getTime()
+  let date = sjc.getTime()
   // console.log(pub_date);
+  let { title, content, describe, state, classification, label } = req.body
+  // console.log(req.body);
+  let labelReq = JSON.parse(label)
   const articleInfo = {
-    // 标题、内容、发布状态、所属分类的Id
-    ...req.body,
+    // 标题
+    title,
+    // 内容
+    content,
+    // 摘要
+    describe,
+    // 发布状态
+    state,
+    // 所属分类的Id
+    classification,
+    // 标签后续添加
     // 文章封面的存放路径
     cover_img: path.join('/uploads', '/articlecover', req.file.filename),
-    // 文章的发布时间
-    pub_date,
-    // 文章作者的Id
-    author_id: req.user.id,
-    // 点赞
-    like_count: 0,
+    // 文章的创建时间
+    create_time: date,
+    // 文章的最终修改时间
+    last_time: date,
     // 留言
     message_count: 0,
     // 浏览量
-    look_count: 0,
+    look_count: 0
   }
-  const sql = `insert into article_table set ?`
+  // console.log(articleInfo)
+  const sqlArticle = `insert into article_table set ?`
+  const sqlTag = `insert into tag_relationship (article_id,tag_id) values (?,?)`
   new Promise((resolve, reject) => {
-    db.query(sql, articleInfo, (err, result) => {
+    db.query(sqlArticle, articleInfo, (err, result) => {
+      if (result.affectedRows !== 1) reject('上传文章失败')
       if (err) reject(err)
-      // if (result.affectedRows !== 1) reject('发布新文章失败！')
+      resolve(result.insertId)
+      // console.log(result)
     })
-    // console.log(req.body);
-    resolve()
-  }).then(() => {
-    const str = 'select id from article_table order by id desc'
-    db.query(str, (err, result) => {
-      if (err) return res.cc(err)
-      const inSql = 'insert into tag_relationship (article_id,tag_id) values ?'
-      let article = Number(result[0].id)
-      let articleInfo = []
-      for (let i = 0; i < req.body.tag.length; i++) {
-        articleInfo.push([article, Number(req.body.tag[i])])
-      }
-      db.query(inSql, [articleInfo], (err, results) => {
-        if (err) return res.cc(err)
-        res.cc('发布文章成功！', 200)
+  }).then(artId => {
+    return new Promise((resolve, reject) => {
+      labelReq.forEach(el => {
+        db.query(sqlTag, [artId, el.id], (err, result) => {
+          if (result.affectedRows !== 1) reject('上传文章(标签)失败')
+          if (err) reject(err)
+        })
       })
+      resolve()
     })
-  }, err => {
+  },err => {
+    res.cc(err)
+  }).then(() => {
+    res.cc('发布文章成功！',200)
+  },err => {
     res.cc(err)
   })
 }
@@ -118,7 +138,7 @@ exports.getArticleList = (req, res) => {
   }).then(value => {
     db.query(str, (err, result) => {
       if (err) return res.cc(err)
-      
+
       for (let i = 0; i < value.length; i++) {
         let tagList = []
         for (let j = 0; j < result.length; j++) {
@@ -141,14 +161,14 @@ exports.getArticleList = (req, res) => {
 // 获取文章总数接口处理函数
 exports.getArticleNum = (req, res) => {
   const sql = 'select id from article_table where is_delete=0';
-    db.query(sql, (err, result) => {
-      if (err) res.cc(err)
-      res.send({
-        code: 200,
-        message: "获取文章总数成功",
-        data: result.length
-      })
+  db.query(sql, (err, result) => {
+    if (err) res.cc(err)
+    res.send({
+      code: 200,
+      message: "获取文章总数成功",
+      data: result.length
     })
+  })
 }
 
 

@@ -7,11 +7,11 @@ const router = express.Router();
 // 引入用户路由处理函数模块
 const routerArtcate = require('../router_handler/artcate');
 
-// 获取文章分类 一级 列表
-router.get('/api/article/getcatesfirst', routerArtcate.getCatesFirst)
+// 获取文章分类
+router.get('/artcate/getarticleclass', routerArtcate.getArticleClass)
 
-// 获取文章分类 二级 列表
-router.get('/api/article/getcatessecond', routerArtcate.getCatesSecond)
+// 获取标签
+router.get('/artcate/getarticletag', routerArtcate.getArticleTag)
 
 // 新增二级分类
 router.post('/api/article/addcatessecond', routerArtcate.addCatesSecond)

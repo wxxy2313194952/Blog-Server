@@ -44,44 +44,44 @@ app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/admin\/u
 
 
 // 引入登录模块路由
-const userRouter = require('./router/user')
+const userRouter = require('./admin/router/user')
 // 注册登录模块路由
 app.use('/admin',userRouter)
 
 // 引入留言模块路由
-const commentRouter = require('./router/comment')
+const commentRouter = require('./admin/router/comment')
 app.use(commentRouter)
 
 // 引入文章分类模块路由
-const ArtcateRouter = require('./router/artcate')
-app.use(ArtcateRouter)
+const ArtcateRouter = require('./admin/router/artcate')
+app.use('/admin',ArtcateRouter)
 
 // 引入文章模块路由
-const ArticleRouter = require('./router/article')
-app.use(ArticleRouter)
+const ArticleRouter = require('./admin/router/article')
+app.use('/admin', ArticleRouter)
 
 // 引入主页模块路由
-const HomeRouter = require('./router/home')
+const HomeRouter = require('./admin/router/home')
 app.use(HomeRouter)
 
 // 引入全局组件Left模块路由
-const LeftRouter = require('./router/left')
+const LeftRouter = require('./admin/router/left')
 app.use('/api',LeftRouter)
 
 // 引入全局组件Right模块路由
-const RightRouter = require('./router/right')
+const RightRouter = require('./admin/router/right')
 app.use('/api', RightRouter)
 
 // 引入动态模块路由
-const DailyRouter = require('./router/daily')
+const DailyRouter = require('./admin/router/daily')
 app.use(DailyRouter)
 
 // 引入文章标签模块
-const TagRouter = require('./router/tag')
+const TagRouter = require('./admin/router/tag')
 app.use(TagRouter)
 
 // 引入更新日志模块
-const VerRouter = require('./router/version')
+const VerRouter = require('./admin/router/version')
 app.use(VerRouter)
 
 

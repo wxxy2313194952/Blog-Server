@@ -1,31 +1,47 @@
 // 定义和文章分类的路由处理函数，供 /router/artcate 模块进行调用
 
 // 导入数据库操作模块
-const db = require('../db/index');
+const db = require('../../db/index');
 
-// 获取获取文章分类一级列表接口处理函数
-exports.getCatesFirst = (req, res) => {
+/**
+ * 获取文章分类
+ * 返回数据：
+ * [
+ *   {"id": 1,"name": "学习笔记","is_delete": 0},
+ *   {"id": 2,"name": "生活记录","is_delete": 0},
+ *   {"id": 3,"name": "更新记录","is_delete": 0}
+ * ]
+ */
+exports.getArticleClass = (req, res) => {
   // 定义 sql 语句
-  const sql = 'select * from artcate_first_table where is_delete=0'
+  const sql = 'select id,name from artcate_class_table where is_delete=0'
   db.query(sql, (err, result) => {
     if (err) return res.cc(err)
     res.send({
       code: 200,
-      message: '获取一级分类成功',
+      message: '获取分类成功',
       data: result
     })
   })
 }
 
-// 获取获取文章分类 二级 列表接口处理函数
-exports.getCatesSecond = (req, res) => {
+/**
+ * 获取标签
+ * 返回示例:
+ * [
+ *   {"id": 1,"name": "Vue","is_delete": 0},
+ *   {"id": 2,"name": "React","is_delete": 0},
+ *   {"id": 3,"name": "javascript","is_delete": 0}
+ * ]
+ */
+exports.getArticleTag = (req, res) => {
   // 定义 sql 语句
-  const sql = 'select * from artcate_second_table where is_delete=0'
+  const sql = 'select id,name from tag where is_delete=0'
   db.query(sql, (err, result) => {
     if (err) return res.cc(err)
     res.send({
       code: 200,
-      message: '获取二级分类成功',
+      message: '获取标签成功',
       data: result
     })
   })

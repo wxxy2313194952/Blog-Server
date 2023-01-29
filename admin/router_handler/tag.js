@@ -1,7 +1,7 @@
 // 定义文章标签处理函数，供 /router/tag 模块进行调用
 
 // 导入数据库操作模块
-const db = require('../db/index')
+const db = require('../../db/index')
 
 
 // 获取标签列表接口处理函数

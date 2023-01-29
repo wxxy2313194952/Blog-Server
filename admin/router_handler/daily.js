@@ -1,6 +1,6 @@
 // 动态路由模块处理函数
 // 导入数据库操作模块
-const db = require('../db/index');
+const db = require('../../db/index');
 
 // 导入处理路径的核心模块
 const path = require('path')

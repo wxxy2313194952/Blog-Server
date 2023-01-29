@@ -1,7 +1,7 @@
 // 定义和用户相关的路由处理函数，供 /router/user.js 模块进行调用
 
 // 导入数据库操作模块
-const db = require('../db/index');
+const db = require('../../db/index');
 
 //导入bcryptjs密码加密这个包
 const bcrypt = require('bcryptjs');
@@ -10,8 +10,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 //导入全局配置文件
-const config = require('../config');
-// const { response } = require('express');
+const config = require('../../config');
 
 // 注册接口处理函数 
 exports.reguser = (req, res) => {
