@@ -39,17 +39,14 @@ const { add_article_schema } = require('../../schema/article')
 // 将文件类型的数据，解析并挂载到 req.file 属性中
 // 将文本类型的数据，解析并挂载到 req.body 属性中
 router.post('/article/add', upload.single('cover_img'), expressJoi(add_article_schema), routerArticle.addArticle)
-// 获取文章信息路由
-router.get('/api/article/get/:id', routerArticle.getArticle)
-// 首页获取文章列表
-router.get('/api/article/getarticlelist',routerArticle.getArticleList)
+// 获取文章列表
+router.get('/article/getarticlelist', routerArticle.getArticleList)
 // 获取文章总数接口
-router.get('/api/article/getarticlenum',routerArticle.getArticleNum)
-
-
-
-// router.post('/api/add',routerArticle.add)
-
+router.get('/article/getarticlenum', routerArticle.getArticleNum)
+// 删除文章
+router.get('/article/delarticle/:id', routerArticle.delArticle)
+// 获取文章信息路由
+router.get('/article/getarticle/:id', routerArticle.getArticle)
 
 // 暴露当前路由模块
 module.exports = router;
