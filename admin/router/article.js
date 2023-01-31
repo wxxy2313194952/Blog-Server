@@ -45,8 +45,10 @@ router.get('/article/getarticlelist', routerArticle.getArticleList)
 router.get('/article/getarticlenum', routerArticle.getArticleNum)
 // 删除文章
 router.get('/article/delarticle/:id', routerArticle.delArticle)
-// 获取文章信息路由
+// 获取文章信息
 router.get('/article/getarticle/:id', routerArticle.getArticle)
+// 编辑文章
+router.post('/article/editarticle', routerArticle.editArticle)
 
 // 暴露当前路由模块
 module.exports = router;

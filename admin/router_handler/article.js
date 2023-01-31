@@ -156,37 +156,33 @@ exports.delArticle = (req,res) => {
 }
 
 // 获取文章详情
-exports.getArticle = (req, res) => {
+exports.getArticle = (req, res) => { 
   const sql = `select * from article_table where is_delete=0 and id=?`
   const sqlTag = "select * from tag where is_delete=0"
   const str = `select * from tag_relationship where is_delete=0`
   new Promise((resolve, reject) => {
     db.query(sql, req.params.id, (err, result) => {
-      if (err) reject(err)
-      result.forEach(el => {
-        el.create_time = dayjs(el.create_time).format('YYYY年MM月DD日 HH:mm')
-        el.last_time = dayjs(el.last_time).format('YYYY年MM月DD日 HH:mm')
-        el.tags = []
-      })
+      if (err) reject(err) 
+      result[0].create_time = dayjs(result[0].create_time).format('YYYY年MM月DD日 HH:mm')
+      result[0].last_time = dayjs(result[0].last_time).format('YYYY年MM月DD日 HH:mm')
+      result[0].tags = []
       db.query(sqlTag,(err,resTag) => {
         if (err) res.cc(err)
-        resolve({resArr:result,resTag})
+        resolve({resArr:result[0],resTag})
       })
     })
-  }).then(({resArr,resTag}) => {
-    db.query(str, (err, result) => {
-      if(err) res.cc(err)
-      resArr.forEach(el => {
-        result.forEach(item => {
-          if (el.id == item.article_id) {
-            resTag.forEach(date => {
-              if (date.id == item.tag_id) {
-                el.tags.push(date.name)
-              }
-            })
-          }
-        })
-      });
+  }).then(({ resArr, resTag }) => {
+    db.query(str, (err, result) => { 
+      if (err) res.cc(err)
+      result.forEach(el => {
+        if (el.article_id == resArr.id) {
+          resTag.forEach(item => {
+            if (item.id == el.tag_id) {
+              resArr.tags.push(item.name)
+            }
+          })
+        }
+      })
       res.send({
         code: 200,
         message: '获取文章列表成功~',
@@ -196,51 +192,65 @@ exports.getArticle = (req, res) => {
   },err => {
     res.cc(err)
   })
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // 多表查询文章列表 sql 语句
-  // const sql = `select article_table.*,users_table.nickname from article_table,users_table 
-  //   where article_table.id = ? and article_table.author_id = users_table.id`
-  // // 多表查询文章标签 sql 语句
-  // const mySql = `select name,tag_id from tag_relationship,tag 
-  //   where tag_relationship.tag_id = tag.id and article_id=? and tag_relationship.is_delete = 0`
-  // new Promise((resolve, reject) => {
-  //   db.query(sql, req.params.id, (err, results) => {
-  //     if (err) reject(err)
-  //     let pub_date = results[0].pub_date
-  //     pub_date = dayjs(pub_date).format('YYYY年MM月DD日 HH:mm')
-  //     db.query(mySql, req.params.id, (err, result) => {
-  //       if (err) return res.cc(err)
-  //       res.send({
-  //         code: 200,
-  //         data: {
-  //           ...results[0],
-  //           pub_date,
-  //           tag: result
-  //         },
-  //       })
-  //       resolve(results[0].look_count)
-  //     })
-  //   })
-  // }).then(look => {
-  //   const sqlStr = 'update article_table set look_count=? where id=?'
-  //   db.query(sqlStr, [++look, req.params.id], (err, result) => {
-  //     if (err) return res.cc(err)
-  //   })
-  // }, (err) => {
-  //   res.cc(err)
-  // })
+/**
+ * 编辑文章
+ * 标签label为数组
+ */
+exports.editArticle = (req, res) => {
+  let sjc = new Date()
+  let date = sjc.getTime()
+  let { title, content, describe, classification, label } = req.query
+  let labelReq = JSON.parse(label)
+  const articleInfo = {
+    // 标题
+    title,
+    // 内容 
+    content,
+    // 摘要
+    describe,
+    // 所属分类的Id
+    classification,
+    // 文章的最终修改时间
+    last_time: date,
+  }
+  const delSql = `delete from tag_relationship where article_id=${req.query.id}`
+  const sqlArticle = `update article_table set ? where id=?`
+  const sqlTag = `insert into tag_relationship (article_id,tag_id) values (?,?)`
+  new Promise((resolve, reject) => {
+    db.query(delSql,(err,result) => {
+      if (err) reject(err)
+      console.log(result.affectedRows);
+      if (result.affectedRows != 0) {
+        resolve()
+      }
+    })
+  }).then(() => {
+    return new Promise((resolve, reject) => {
+      db.query(sqlArticle, [articleInfo, req.query.id], (err, result) => {
+        if (result.affectedRows !== 1) reject('更新文章失败')
+        if (err) reject(err)
+        resolve()
+      })
+    })
+  },err => {
+    res.cc(err)
+  }).then(() => {
+    return new Promise((resolve, reject) => {
+      labelReq.forEach(el => {
+        db.query(sqlTag, [req.query.id, el.id], (err, result) => {
+          if (result.affectedRows !== 1) reject('更新文章(标签)失败')
+          if (err) reject(err)
+        })
+      })
+      res.cc("编辑成功", 200)
+      resolve()
+    })
+  },err => {
+    res.cc(err)
+  }).catch(err => {
+    res.cc(err)
+  })
 }
 
