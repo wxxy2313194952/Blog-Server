@@ -52,6 +52,10 @@ app.use('/admin',userRouter)
 const commentRouter = require('./admin/router/comment')
 app.use(commentRouter)
 
+// 引入访问信息模块路由
+const accessRouter = require('./admin/router/access')
+app.use('/admin',accessRouter)
+
 // 引入文章分类模块路由
 const ArtcateRouter = require('./admin/router/artcate')
 app.use('/admin',ArtcateRouter)

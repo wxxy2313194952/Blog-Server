@@ -47,34 +47,73 @@ exports.getArticleTag = (req, res) => {
   })
 }
 
-// 新增二级分类处理函数
-exports.addCatesSecond = (req, res) => {
+// 新增文章标签
+exports.addArticleTag = (req, res) => {
   // 定义查重的 SQL 语句
-  const sql = 'select * from artcate_second_table where name=?'
-  new Promise((resolve, reject) => {
-    db.query(sql, req.body.name, (err, result) => {
-      if (err) reject(err)
-      if (result.length === 1) reject(`已有分类名${req.body.name}`)
-      resolve()
-    })
-  }).then(() => {
-    const sqlStr = `insert into artcate_second_table set ?`
-    db.query(sqlStr, req.body, (err, result) => {
-      if (err) return res.cc(err)
-      if (result.affectedRows !== 1) return res.cc('新增文章分类失败！')
-      res.cc('新增文章分类成功！', 200)
-    })
-  }, value => {
-    return res.cc(value)
+  const sql = 'insert into tag set ?'
+  db.query(sql, req.body, (err, result) => {
+    if (err) res.cc(err)
+    if (result.affectedRows != 1) res.cc(`添加标签失败`)
+  })
+  res.cc('添加文章标签成功！', 200)
+}
+
+// 编辑文章标签
+exports.editArticleTag = (req, res) => {
+  // 定义标记删除的 SQL 语句
+  const sql = `update tag set name=? where id=?`
+  console.log(req.body);
+  // 调用 db.query() 执行 SQL 语句
+  db.query(sql,[req.body.name,req.body.id], (err, results) => {
+    console.log(err);
+    if (err) return res.cc(err)
+    if (results.affectedRows !== 1) return res.cc('编辑文章标签失败！')
+    res.cc('编辑文章标签成功！', 200)
   })
 }
 
-// 删除二级文章分类的处理函数
-exports.deleteCatesSecond = (req, res) => {
+// 删除文章标签
+exports.delArticleTag = (req, res) => {
   // 定义标记删除的 SQL 语句
-  const sql = `update artcate_second_table set is_delete=1 where name=?`
+  const sql = `delete from tag where id=?`
   // 调用 db.query() 执行 SQL 语句
-  db.query(sql, req.body.name, (err, results) => {
+  db.query(sql, req.body.id, (err, results) => {
+    if (err) return res.cc(err)
+    if (results.affectedRows !== 1) return res.cc('删除文章标签失败！')
+    res.cc('删除文章标签成功！', 200)
+  })
+}
+// 新增文章分类
+exports.addArticleClass = (req, res) => {
+  // 定义查重的 SQL 语句
+  const sql = 'insert into artcate_class_table set ?'
+  db.query(sql, req.body, (err, result) => {
+    if (err) res.cc(err)
+    if (result.affectedRows != 1) res.cc(`添加失败`)
+  })
+  res.cc('添加文章分类成功！', 200)
+}
+
+// 编辑文章分类
+exports.editArticleClass = (req, res) => {
+  // 定义标记删除的 SQL 语句
+  const sql = `update artcate_class_table set name=? where id=?`
+  console.log(req.body);
+  // 调用 db.query() 执行 SQL 语句
+  db.query(sql,[req.body.name,req.body.id], (err, results) => {
+    console.log(err);
+    if (err) return res.cc(err)
+    if (results.affectedRows !== 1) return res.cc('编辑文章分类失败！')
+    res.cc('编辑文章分类成功！', 200)
+  })
+}
+
+// 删除文章分类
+exports.delArticleClass = (req, res) => {
+  // 定义标记删除的 SQL 语句
+  const sql = `delete from artcate_class_table where id=?`
+  // 调用 db.query() 执行 SQL 语句
+  db.query(sql, req.body.id, (err, results) => {
     if (err) return res.cc(err)
     if (results.affectedRows !== 1) return res.cc('删除文章分类失败！')
     res.cc('删除文章分类成功！', 200)

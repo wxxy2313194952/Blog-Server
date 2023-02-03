@@ -13,11 +13,23 @@ router.get('/artcate/getarticleclass', routerArtcate.getArticleClass)
 // 获取标签
 router.get('/artcate/getarticletag', routerArtcate.getArticleTag)
 
-// 新增二级分类
-router.post('/api/article/addcatessecond', routerArtcate.addCatesSecond)
+// 新增文章分类
+router.post('/artcate/addarticleclass', routerArtcate.addArticleClass)
 
-// 删除二级文章分类的路由
-router.post('/api/article/deletecatessecond', routerArtcate.deleteCatesSecond)
+// 编辑文章分类
+router.post('/artcate/editarticleclass', routerArtcate.editArticleClass)
+
+// 删除文章分类
+router.post('/artcate/delarticleclass', routerArtcate.delArticleClass)
+
+// 新增文章标签
+router.post('/artcate/addarticletag', routerArtcate.addArticleTag)
+
+// 编辑文章标签
+router.post('/artcate/editarticletag', routerArtcate.editArticleTag)
+
+// 删除文章标签
+router.post('/artcate/delarticletag', routerArtcate.delArticleTag)
 
 
 // 暴露当前路由模块

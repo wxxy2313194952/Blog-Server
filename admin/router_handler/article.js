@@ -134,7 +134,7 @@ exports.getArticleList = (req, res) => {
 
 // 获取文章总数接口处理函数
 exports.getArticleNum = (req, res) => {
-  // console.log(req.socket.remoteAddress) 获取IP
+  console.log(req.socket.remoteAddress) //获取IP
   const sql = 'select id from article_table where is_delete=0';
   db.query(sql, (err, result) => {
     if (err) res.cc(err)
