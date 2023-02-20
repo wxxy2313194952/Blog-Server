@@ -38,8 +38,8 @@ app.use((req, res, next) => {
 const config = require('./config')
 // 解析 token 的中间件
 const expressJWT = require('express-jwt')
-// unless指定以 /admin/user/login 和 /uploads/ 接口不需要进行 Token 身份认证
-app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/admin\/user\/login|^\/uploads\//] }))
+// unless指定以 /admin/user/login , /uploads/ , /api/ 接口不需要进行 Token 身份认证
+app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/admin\/user\/login|^\/uploads\/|^\/api\/|^\/admin\/user\/reguser/] }))
 
 
 
@@ -47,10 +47,6 @@ app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/admin\/u
 const userRouter = require('./admin/router/user')
 // 注册登录模块路由
 app.use('/admin',userRouter)
-
-// 引入留言模块路由
-const commentRouter = require('./admin/router/comment')
-app.use(commentRouter)
 
 // 引入访问信息模块路由
 const accessRouter = require('./admin/router/access')
@@ -64,29 +60,43 @@ app.use('/admin',ArtcateRouter)
 const ArticleRouter = require('./admin/router/article')
 app.use('/admin', ArticleRouter)
 
+// 引入留言模块路由
+const MessageRouter = require('./admin/router/message')
+app.use('/admin', MessageRouter)
+
+/********************** 前台相关路由 ******************************/
+
+// 引入前台文章相关路由
+const articleShowRouter = require('./show/router/article')
+app.use('/api', articleShowRouter)
+
+// 引入留言模块路由
+const messageShowRouter = require('./show/router/message')
+app.use('/api',messageShowRouter)
+
 // 引入主页模块路由
-const HomeRouter = require('./admin/router/home')
-app.use(HomeRouter)
+const HomeRouter = require('./show/router/home')
+app.use('/api',HomeRouter)
 
 // 引入全局组件Left模块路由
-const LeftRouter = require('./admin/router/left')
+const LeftRouter = require('./show/router/left')
 app.use('/api',LeftRouter)
 
 // 引入全局组件Right模块路由
-const RightRouter = require('./admin/router/right')
+const RightRouter = require('./show/router/right')
 app.use('/api', RightRouter)
 
 // 引入动态模块路由
-const DailyRouter = require('./admin/router/daily')
-app.use(DailyRouter)
+const DailyRouter = require('./show/router/daily')
+app.use('/api',DailyRouter)
 
 // 引入文章标签模块
-const TagRouter = require('./admin/router/tag')
-app.use(TagRouter)
+const TagRouter = require('./show/router/tag')
+app.use('/api',TagRouter)
 
 // 引入更新日志模块
-const VerRouter = require('./admin/router/version')
-app.use(VerRouter)
+const VerRouter = require('./show/router/version')
+app.use('/api',VerRouter)
 
 
 

@@ -8,12 +8,12 @@ const routerDaily = require('../router_handler/daily');
 
 
 // 获取动态接口
-router.get('/api/daily/getdailylist', routerDaily.getDailyList)
+router.get('/daily/getdailylist', routerDaily.getDailyList)
 // 获取动态总条数接口
-router.get('/api/daily/getdailynum', routerDaily.getDailyNum)
+router.get('/daily/getdailynum', routerDaily.getDailyNum)
 
 
 
 
 // 暴露当前路由模块
-module.exports = router;
+module.exports = router; 

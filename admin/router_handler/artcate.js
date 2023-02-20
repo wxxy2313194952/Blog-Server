@@ -3,6 +3,10 @@
 // 导入数据库操作模块
 const db = require('../../db/index');
 
+function decideRules(rules) {
+  return rules == 'super'//if (!decideRules(req.user.rules)) return res.cc('无权限')
+}
+
 /**
  * 获取文章分类
  * 返回数据：
@@ -49,6 +53,7 @@ exports.getArticleTag = (req, res) => {
 
 // 新增文章标签
 exports.addArticleTag = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
   // 定义查重的 SQL 语句
   const sql = 'insert into tag set ?'
   db.query(sql, req.body, (err, result) => {
@@ -60,9 +65,10 @@ exports.addArticleTag = (req, res) => {
 
 // 编辑文章标签
 exports.editArticleTag = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
   // 定义标记删除的 SQL 语句
   const sql = `update tag set name=? where id=?`
-  console.log(req.body);
+  // console.log(req.body);
   // 调用 db.query() 执行 SQL 语句
   db.query(sql,[req.body.name,req.body.id], (err, results) => {
     console.log(err);
@@ -74,17 +80,23 @@ exports.editArticleTag = (req, res) => {
 
 // 删除文章标签
 exports.delArticleTag = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
   // 定义标记删除的 SQL 语句
   const sql = `delete from tag where id=?`
   // 调用 db.query() 执行 SQL 语句
   db.query(sql, req.body.id, (err, results) => {
-    if (err) return res.cc(err)
-    if (results.affectedRows !== 1) return res.cc('删除文章标签失败！')
-    res.cc('删除文章标签成功！', 200)
+    if (err) {
+      if (err['errno'] == 1451) return res.cc("当前标签仍存在引用") 
+      return res.cc(err)
+    } else {
+      if (results.affectedRows !== 1) return res.cc('删除文章标签失败！')
+      res.cc('删除文章标签成功！', 200)
+    }
   })
 }
 // 新增文章分类
 exports.addArticleClass = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
   // 定义查重的 SQL 语句
   const sql = 'insert into artcate_class_table set ?'
   db.query(sql, req.body, (err, result) => {
@@ -96,9 +108,10 @@ exports.addArticleClass = (req, res) => {
 
 // 编辑文章分类
 exports.editArticleClass = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
   // 定义标记删除的 SQL 语句
   const sql = `update artcate_class_table set name=? where id=?`
-  console.log(req.body);
+  // console.log(req.body);
   // 调用 db.query() 执行 SQL 语句
   db.query(sql,[req.body.name,req.body.id], (err, results) => {
     console.log(err);
@@ -110,12 +123,17 @@ exports.editArticleClass = (req, res) => {
 
 // 删除文章分类
 exports.delArticleClass = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
   // 定义标记删除的 SQL 语句
   const sql = `delete from artcate_class_table where id=?`
   // 调用 db.query() 执行 SQL 语句
   db.query(sql, req.body.id, (err, results) => {
-    if (err) return res.cc(err)
-    if (results.affectedRows !== 1) return res.cc('删除文章分类失败！')
-    res.cc('删除文章分类成功！', 200)
+    if (err) {
+      if (err['errno'] == 1451) return res.cc("当前分类仍存在引用") 
+      return res.cc(err)
+    } else {
+      if (results.affectedRows !== 1) return res.cc('删除文章分类失败！')
+      res.cc('删除文章分类成功！', 200)
+    }
   })
 }

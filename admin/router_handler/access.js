@@ -6,6 +6,10 @@ const db = require('../../db/index')
 // 引入时间day.js
 const dayjs = require('dayjs')
 
+function decideRules(rules) {
+  return rules == 'super'//if (!decideRules(req.user.rules)) return res.cc('无权限')
+}
+
 // 获取IP
 function setUserIP (req) {
   let getClientIp = function (req) {
@@ -98,6 +102,7 @@ exports.getAccessList = (req, res) => {
 
 // 删除访问信息
 exports.delAccess = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
   const sql = `delete from access_info where id=${req.params.id}`
   db.query(sql, (err, result) => {
     if (err) res.cc(err)

@@ -9,7 +9,7 @@ const routerVersion = require('../router_handler/version');
 
 
 // 获取列表接口
-router.get('/api/verlist', routerVersion.getVerList);
+router.get('/verlist', routerVersion.getVerList);
 
 // 修改列表接口
 

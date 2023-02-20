@@ -8,13 +8,13 @@ const routerTag = require('../router_handler/tag');
 
 
 // 获取标签列表接口
-router.get('/api/tag/gettaglist', routerTag.getTagList)
+router.get('/tag/gettaglist', routerTag.getTagList)
 
 // 增加标签接口
-router.post('/my/tag/tagadd', routerTag.tagAdd)
+router.post('/tag/tagadd', routerTag.tagAdd)
 
 // 删除标签接口
-router.post('/my/tag/tagdelete', routerTag.tagDelete)
+router.post('/tag/tagdelete', routerTag.tagDelete)
 
 
 

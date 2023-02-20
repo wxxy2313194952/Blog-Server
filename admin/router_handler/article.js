@@ -9,6 +9,10 @@ const path = require('path')
 // 引入时间day.js
 const dayjs = require('dayjs')
 
+function decideRules(rules) {
+  return rules == 'super'//if (!decideRules(req.user.rules)) return res.cc('无权限')
+}
+
 /**
  * 文章处理函数
  * 标签传递的JSON字符串，在后端进行处理
@@ -24,12 +28,9 @@ exports.addArticle = (req, res) => {
   // TODO：证明数据都是合法的，可以进行后续业务逻辑的处理
   // 处理文章的信息对象
   // 时间
-  // console.log(req.file)
   let sjc = new Date()
   let date = sjc.getTime()
-  // console.log(pub_date);
   let { title, content, describe, state, classification, label } = req.body
-  // console.log(req.body);
   let labelReq = JSON.parse(label)
   const articleInfo = {
     // 标题
@@ -89,6 +90,7 @@ exports.addArticle = (req, res) => {
  * limit 偏移量(0开始) 查询数据条数
  */
 exports.getArticleList = (req, res) => {  
+  console.log(req.user);
   const {pageNo,pageSize} = req.query
   const sql = `select * from article_table where article_table.is_delete=0 
     order by id desc limit ${pageSize * (pageNo - 1)},${pageSize}`
@@ -134,7 +136,7 @@ exports.getArticleList = (req, res) => {
 
 // 获取文章总数接口处理函数
 exports.getArticleNum = (req, res) => {
-  console.log(req.socket.remoteAddress) //获取IP
+  // console.log(req.socket.remoteAddress) //获取IP
   const sql = 'select id from article_table where is_delete=0';
   db.query(sql, (err, result) => {
     if (err) res.cc(err)
@@ -147,8 +149,13 @@ exports.getArticleNum = (req, res) => {
 }
 
 // 删除文章
-exports.delArticle = (req,res) => {
-  const sql = `update article_table set is_delete=1 where id=${req.params.id}`
+exports.delArticle = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
+  const sql = `delete from article_table where id=${req.params.id}`
+  const sqlTag = `delete from tag_relationship where article_id=${req.params.id}`
+  db.query(sqlTag,(e,r) => {
+    if (e) res.cc(e) 
+  })
   db.query(sql,(err,result) => {
     if (err) res.cc(err) 
     if(result.affectedRows == 1) res.cc("删除成功",200) 
@@ -199,6 +206,7 @@ exports.getArticle = (req, res) => {
  * 标签label为数组
  */
 exports.editArticle = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
   let sjc = new Date()
   let date = sjc.getTime()
   let { title, content, describe, classification, label } = req.query

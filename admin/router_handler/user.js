@@ -12,6 +12,10 @@ const jwt = require('jsonwebtoken');
 //导入全局配置文件
 const config = require('../../config');
 
+function decideRules(rules) {
+  return rules == 'super'
+}
+
 // 注册接口处理函数 
 exports.reguser = (req, res) => {
   // 接收表单数据
@@ -63,11 +67,11 @@ exports.login = (req, res) => {
     if (err) return res.cc(err)
     //执行 SQL 语句成功，但是查询到数据条数不等于 1
     if (result.length !== 1) {
-      return res.cc('用户名或密码错误，请重试~~~')
+      return res.cc('用户名或密码错误，请重试')
     }
     //判断密码是否一致
     const compareResult = bcrypt.compareSync(userInfo.password, result[0].password)
-    if (!compareResult) return res.cc('用户名或密码错误，请重试~~~')
+    if (!compareResult) return res.cc('用户名或密码错误，请重试')
     // 服务端生成 token 字符串
     // 保护用户隐私，需要剔除敏感信息，只保留 username
     const user = {
@@ -93,7 +97,6 @@ exports.login = (req, res) => {
 
 // 获取用户信息
 exports.getUserInfo = (req, res) => {
-  // console.log(req.host);
   res.send({
     code: 200,
     message: '获取用户信息成功！',
