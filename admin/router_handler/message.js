@@ -81,7 +81,6 @@ exports.delMessage = (req, res) => {
 exports.editMessage = (req, res) => {
   if (!decideRules(req.user.rules)) return res.cc('无权限')
   const sql = `update message_table set ? where id=?`
-  console.log(req.query);
   db.query(sql, [{ content: req.query.content }, req.query.id], (err, result) => {
     if (err) res.cc(err)
     if (result.affectedRows !== 1) res.cc('编辑留言失败')

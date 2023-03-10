@@ -13,6 +13,8 @@ router.get('/article/getarticlelist', routerArticle.getArticleList)
 router.get('/article/getarticlenum', routerArticle.getArticleNum)
 // 获取文章信息
 router.get('/article/getarticle/:id', routerArticle.getArticle)
+// 获取文章分类
+router.get('/article/getarticleclass', routerArticle.getArticleClass)
 
 
 // 暴露当前路由模块

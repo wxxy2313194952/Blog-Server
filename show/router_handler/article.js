@@ -11,18 +11,20 @@ exports.getArticle = (req, res) => {
   const sql = `select * from article_table where is_delete=0 and id=?`
   const sqlTag = "select * from tag where is_delete=0"
   const str = `select * from tag_relationship where is_delete=0`
+  const sql_cont = `update article_table set look_count=? where id=?`
   new Promise((resolve, reject) => {
     db.query(sql, req.params.id, (err, result) => {
-      if (err) reject(err) 
+      if (err) reject(err)
+      if(result.length == 0) return res.cc("无文章",201)
       result[0].create_time = dayjs(result[0].create_time).format('YYYY年MM月DD日 HH:mm')
       result[0].last_time = dayjs(result[0].last_time).format('YYYY年MM月DD日 HH:mm')
       result[0].tags = []
       db.query(sqlTag,(err,resTag) => {
         if (err) res.cc(err)
-        resolve({resArr:result[0],resTag})
+        resolve({resArr:result[0],resTag,look_count:result[0].look_count})
       })
     })
-  }).then(({ resArr, resTag }) => {
+  }).then(({ resArr, resTag, look_count }) => {
     db.query(str, (err, result) => { 
       if (err) res.cc(err)
       result.forEach(el => {
@@ -34,10 +36,13 @@ exports.getArticle = (req, res) => {
           })
         }
       })
-      res.send({
-        code: 200,
-        message: '获取文章列表成功~',
-        data: resArr
+      db.query(sql_cont, [look_count + 1, req.params.id], (err, result) => {
+        if (err) res.cc(err)
+        res.send({
+          code: 200,
+          message: '获取文章成功~',
+          data: resArr
+        })
       })
     })
   },err => {
@@ -104,6 +109,20 @@ exports.getArticleNum = (req, res) => {
       code: 200,
       message: "获取文章总数成功",
       data: result.length
+    })
+  })
+}
+
+// 获取文章分类
+exports.getArticleClass = (req, res) => {
+  // 定义 sql 语句
+  const sql = 'select id,name from artcate_class_table where is_delete=0'
+  db.query(sql, (err, result) => {
+    if (err) return res.cc(err)
+    res.send({
+      code: 200,
+      message: '获取分类成功',
+      data: result
     })
   })
 }

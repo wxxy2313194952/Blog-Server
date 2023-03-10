@@ -5,7 +5,7 @@ const db = require('../../db/index')
 
 // 导入处理路径的核心模块
 const path = require('path')
-
+const fs = require("fs");
 // 引入时间day.js
 const dayjs = require('dayjs')
 
@@ -24,6 +24,7 @@ function decideRules(rules) {
  *  {"id":5,"name":"标签五","type":"danger"}]
  */
 exports.addArticle = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
   if (!req.file || req.file.fieldname !== 'cover_img') return res.cc('文章封面是必选参数！')
   // TODO：证明数据都是合法的，可以进行后续业务逻辑的处理
   // 处理文章的信息对象
@@ -58,28 +59,38 @@ exports.addArticle = (req, res) => {
   // console.log(articleInfo)
   const sqlArticle = `insert into article_table set ?`
   const sqlTag = `insert into tag_relationship (article_id,tag_id) values (?,?)`
+  const insertPic = `update picture set article_id=? where article_id is ?`
   new Promise((resolve, reject) => {
     db.query(sqlArticle, articleInfo, (err, result) => {
-      if (result.affectedRows !== 1) reject('上传文章失败')
-      if (err) reject(err)
+      if (result.affectedRows !== 1) return Promise.reject('上传文章失败')
+      if (err) return Promise.reject(err)
       resolve(result.insertId)
-      // console.log(result)
     })
   }).then(artId => {
     return new Promise((resolve, reject) => {
       labelReq.forEach(el => {
         db.query(sqlTag, [artId, el.id], (err, result) => {
-          if (result.affectedRows !== 1) reject('上传文章(标签)失败')
-          if (err) reject(err)
+          if (result.affectedRows !== 1) return Promise.reject('上传文章(标签)失败')
+          if (err) return Promise.reject(err)
         })
       })
-      resolve()
+      resolve(artId)
     })
-  },err => {
-    res.cc(err)
-  }).then(() => {
-    res.cc('发布文章成功！',200)
-  },err => {
+  }).then( artId => {
+    db.query(insertPic, [artId,null], (err, result) => {
+      if (err) return Promise.reject(err)
+    })
+    const sql = `insert into time_table set ?`
+    let data = {
+      content: "发布文章" + articleInfo.title,
+      date: new Date().getTime()
+    }
+    db.query(sql, data, (err, result) => {
+      if (err) return Promise.reject(err)
+      if (result.affectedRows !== 1) return Promise.reject('添加时间轴失败')
+    })
+    res.cc('发布文章成功！', 200)
+  }).catch(err => {
     res.cc(err)
   })
 }
@@ -90,7 +101,6 @@ exports.addArticle = (req, res) => {
  * limit 偏移量(0开始) 查询数据条数
  */
 exports.getArticleList = (req, res) => {  
-  console.log(req.user);
   const {pageNo,pageSize} = req.query
   const sql = `select * from article_table where article_table.is_delete=0 
     order by id desc limit ${pageSize * (pageNo - 1)},${pageSize}`
@@ -151,15 +161,27 @@ exports.getArticleNum = (req, res) => {
 // 删除文章
 exports.delArticle = (req, res) => {
   if (!decideRules(req.user.rules)) return res.cc('无权限')
-  const sql = `delete from article_table where id=${req.params.id}`
+  const sqlart = `delete from article_table where id=${req.params.id}`
   const sqlTag = `delete from tag_relationship where article_id=${req.params.id}`
-  db.query(sqlTag,(e,r) => {
-    if (e) res.cc(e) 
+  const sqlPicture = `delete from picture where article_id=${req.params.id}`
+  const sqlReview = `delete from review where article_id=${req.params.id}`
+  function delBySql (SQL) {
+    return new Promise((resolve, reject) => {
+      db.query(SQL,(e,r) => {
+        if (e) return Promise.reject(e)
+        resolve()
+      })
+    })
+  }
+  Promise.all([delBySql(sqlReview), delBySql(sqlTag), delBySql(sqlPicture)]).then(
+    db.query(sqlart,(err,result) => {
+      if (err) return Promise.reject(err)
+      if(result.affectedRows == 1) res.cc("删除成功",200) 
+    })
+  ).catch(e => {
+    res.cc(e)
   })
-  db.query(sql,(err,result) => {
-    if (err) res.cc(err) 
-    if(result.affectedRows == 1) res.cc("删除成功",200) 
-  })
+  
 }
 
 // 获取文章详情
@@ -262,3 +284,25 @@ exports.editArticle = (req, res) => {
   })
 }
 
+// 编辑文章时上传图片接口
+exports.addPicture = (req, res) => {
+  if (!decideRules(req.user.rules)) return res.cc('无权限')
+  let info = {
+    pic_path: "/uploads/articlePicture/" + req.file.filename,
+    article_id: req.query.article_id == undefined ? null : req.query.article_id
+  } 
+  db.query(`insert into picture set ?`, info, (err, result) => {
+    if (err) return res.cc(err)
+    res.send({
+      code: 200,
+      message: "上传成功",
+      path: info.pic_path
+    })
+  })
+}
+
+// 新发布文章时上传图片接口
+// exports.addArticlePicture = (req, res) => {
+//   console.log(req.file.filename);
+//   res.cc("成功",200)
+// }

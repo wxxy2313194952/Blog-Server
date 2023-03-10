@@ -15,7 +15,7 @@ exports.getHotArticle = (req,res) => {
 exports.getInfo = (req, res) => {
   const sql = "select * from article_table where is_delete=0"
   new Promise((resolve, reject) => {
-    const date = dayjs(new Date())
+    const date = dayjs()
     // console.log(req.headers['x-forwarded-for']);
     let day = date.diff('2022-05-10', 'day')
     let info = {
@@ -37,32 +37,32 @@ exports.getInfo = (req, res) => {
         info.message += result[i].message_count
       }
       info.articleNum = result.length
-      info.lastUpdate = result[i - 1].pub_date
+      info.lastUpdate = result[i - 1].create_time
       // 获取时间戳差值
       const date_now = dayjs(new Date())
-      const sjc = Date.now() - result[i - 1].pub_date
+      const sjc = Date.now() - result[i - 1].create_time
       // console.log("shuju");
-      // console.log(result[i - 1].pub_date);
+      // console.log(result[i - 1].create_time);
       // console.log("当前");
       // console.log(Date.now());
       // 大于四周
       if (sjc >= 2419200000) {
-        let day_pub = date_now.diff(dayjs(result[i - 1].pub_date), 'month')
+        let day_pub = date_now.diff(dayjs(result[i - 1].create_time), 'month')
         info.lastUpdate = `${day_pub}个月前`
       }
       // 大于一周
       if (sjc <= 2419200000) {
-        let day_pub = date_now.diff(dayjs(result[i - 1].pub_date), 'week')
+        let day_pub = date_now.diff(dayjs(result[i - 1].create_time), 'week')
         info.lastUpdate = `${day_pub}星期前`
       }
       // 小于一周
       if (sjc <= 604800000) {
-        let day_pub = date_now.diff(dayjs(result[i - 1].pub_date), 'day')
+        let day_pub = date_now.diff(dayjs(result[i - 1].create_time), 'day')
         info.lastUpdate = `${day_pub}天前`
       }
       // 小于一天
       if (sjc <= 86400000) {
-        let day_pub = date_now.diff(dayjs(result[i - 1].pub_date), 'hour')
+        let day_pub = date_now.diff(dayjs(result[i - 1].create_time), 'hour')
         info.lastUpdate = `${day_pub}小时前`
       }
       // 小于一小时
@@ -75,12 +75,9 @@ exports.getInfo = (req, res) => {
     res.send({
       code: '200',
       message: '获取博客信息成功！',
-      data: {
-        ...info
-      }
+      data: info
     })
-  }, err => {
+  }).catch(err => {
     res.cc(err)
   })
-
 }
