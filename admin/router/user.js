@@ -7,16 +7,16 @@ const router = express.Router();
 const routerUser = require('../router_handler/user');
 
 // 1. 导入验证表单数据的中间件
-const expressJoi = require('@escook/express-joi')
+// const expressJoi = require('@escook/express-joi')
 // 2. 导入需要的验证规则对象
-const { reg_login_schema } = require('../../schema/user')
+// const { reg_login_schema } = require('../../schema/user')
 
 
 // 登录接口
 router.post('/user/login', routerUser.login);
 
 // 注册接口
-router.post('/user/reguser', expressJoi(reg_login_schema), routerUser.reguser);
+// router.post('/user/reguser', expressJoi(reg_login_schema), routerUser.reguser);
 
 // 获取用户信息接口
 router.get('/user/getinfo', routerUser.getUserInfo);

@@ -42,7 +42,7 @@ function setUserIP (req) {
 exports.setAccessInfo = (req, res) => {
   let sjc = new Date()
   let date = sjc.getTime()
-  let { show_type, platform_type, os_name, browser, city, OSVersion, BrowserVersion } = req.body
+  let { show_type, platform_type, os_name, browser, city, OSVersion, BrowserVersion, user_behavior, user_menu } = req.body
   // console.log(req.body);
   // console.log(req);
   const articleInfo = {
@@ -52,7 +52,9 @@ exports.setAccessInfo = (req, res) => {
     browser: browser + " " + BrowserVersion,
     time: date,
     ip: setUserIP(req),
-    city
+    city,
+    user_behavior,
+    user_menu
   }
   // console.log(req)
   const sqlArticle = `insert into access_info set ?`

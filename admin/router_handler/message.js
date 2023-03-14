@@ -7,7 +7,7 @@ const db = require('../../db/index')
 const dayjs = require('dayjs')
 
 function decideRules(rules) {
-  return rules == 'super'//if (!decideRules(req.user.rules)) return res.cc('无权限')
+  return rules == 'super'
 }
 
 /**

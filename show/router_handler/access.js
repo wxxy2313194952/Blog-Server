@@ -62,15 +62,3 @@ exports.setAccessInfo = (req, res) => {
   })
 }
 
-// // 推送消息
-// exports.Info = async(req, res) => {
-//   let request_data = {
-//     msgtype: "text",
-//     text: {
-//         content: "hello world"
-//     }
-//   }
-//   // 向对应的 Webhook Url 发送对应的数据结构
-//   const { data } = await axios.post('https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e10b0ff8-d967-49e5-a020-30a11d21ab3e', request_data);
-//   res.send(data);
-// }

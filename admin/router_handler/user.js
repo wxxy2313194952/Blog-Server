@@ -12,45 +12,41 @@ const jwt = require('jsonwebtoken');
 //导入全局配置文件
 const config = require('../../config');
 
-function decideRules(rules) {
-  return rules == 'super'
-}
-
 // 注册接口处理函数 
-exports.reguser = (req, res) => {
-  // 接收表单数据
-  // console.log(req.body);
-  const userInfo = req.body;
-  const sqlStr = 'select * from users_table where username=?';
-  db.query(sqlStr, userInfo.username, (err, result) => {
-    if (err) {
-      res.cc(err.message)
-    }
-    // 判断用户名是否被占用
-    if (result.length > 0) {
-      res.cc("用户名重复，换一个吧~~~")
-    }
-    // 调用bcrypt.hashSync()对密码进行加密
-    userInfo.password = bcrypt.hashSync(userInfo.password, 10);
-    //定义插入新用户的 SQL 语句
-    const sql = 'insert into users_table set ?';
-    db.query(sql, {
-      username: userInfo.username,
-      password: userInfo.password,
-      nickname: '大佬你好',
-      avatar: '/uploads/user_pic/mypice.jpg'
-    }, (err, result) => {
-      if (err) {
-        return res.cc(err.message);
-      }
-      // 判断影响行数不为 1 的话
-      if (result.affectedRows !== 1) {
-        return res.cc(err.message);
-      }
-      res.cc('注册成功！', 200);
-    })
-  })
-};
+// exports.reguser = (req, res) => {
+//   // 接收表单数据
+//   // console.log(req.body);
+//   const userInfo = req.body;
+//   const sqlStr = 'select * from users_table where username=?';
+//   db.query(sqlStr, userInfo.username, (err, result) => {
+//     if (err) {
+//       res.cc(err.message)
+//     }
+//     // 判断用户名是否被占用
+//     if (result.length > 0) {
+//       res.cc("用户名重复，换一个吧~~~")
+//     }
+//     // 调用bcrypt.hashSync()对密码进行加密
+//     userInfo.password = bcrypt.hashSync(userInfo.password, 10);
+//     //定义插入新用户的 SQL 语句
+//     const sql = 'insert into users_table set ?';
+//     db.query(sql, {
+//       username: userInfo.username,
+//       password: userInfo.password,
+//       nickname: '大佬你好',
+//       avatar: '/uploads/user_pic/mypice.jpg'
+//     }, (err, result) => {
+//       if (err) {
+//         return res.cc(err.message);
+//       }
+//       // 判断影响行数不为 1 的话
+//       if (result.affectedRows !== 1) {
+//         return res.cc(err.message);
+//       }
+//       res.cc('注册成功！', 200);
+//     })
+//   })
+// };
 
 
 // 登录接口处理函数
@@ -80,8 +76,8 @@ exports.login = (req, res) => {
     }
     // console.log(user);
     // 生成 token 字符串
-    const tokenSter = jwt.sign(user, config.jwtSecretKey, {
-      expiresIn: config.expiresIn
+    const tokenSter = jwt.sign(user, config.Token.jwtSecretKey, {
+      expiresIn: config.Token.expiresIn
     });
     // 返回结果 携带token
     res.send({
