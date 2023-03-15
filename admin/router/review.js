@@ -10,7 +10,7 @@ router.get('/review/getreviewlist', routerReview.getReviewList)
 // 获取评论总数
 router.get('/review/getreviewnum', routerReview.getReviewNum)
 // 删除评论
-router.get('/review/delreview/:id', routerReview.delReview)
+router.get('/review/delreview', routerReview.delReview)
 // 编辑评论
 router.post('/review/editreview', routerReview.editReview)
 

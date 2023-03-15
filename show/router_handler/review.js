@@ -11,6 +11,7 @@ const config = require('../../config')
 // 用户评论
 exports.leaveReview = (req, res) => {
   const sql = `insert into review set ?`
+  const sqlArt = `update article_table set message_count=message_count+1 where id=?`
   const time = new Date().getTime()
   const info = {
     content: req.body.content,
@@ -30,17 +31,22 @@ exports.leaveReview = (req, res) => {
   }
   new Promise((resolve, reject) => {
     db.query(sql, info, (err, result) => {
-      if (err) return res.cc(err)
-      if (result.affectedRows !== 1) res.cc('评论失败')
+      if (err) return reject(err)
+      if (result.affectedRows !== 1) reject('评论失败')
       resolve()
     })
   }).then(() => {
-    res.cc("评论成功", 200)
+    db.query(sqlArt,req.body.article_id,(err,result) => {
+      if (err) return res.cc(err)
+      res.cc("评论成功", 200)
+    })
     try {
       axios.post(config.weixinURL,request_data)
     } catch (err) {
       console.log(err)
     }
+  }).catch(e => {
+    res.cc(e)
   })
 }
 

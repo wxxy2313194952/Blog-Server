@@ -82,7 +82,7 @@ exports.addArticle = (req, res) => {
     })
     const sql = `insert into time_table set ?`
     let data = {
-      content: "发布文章" + articleInfo.title,
+      content: "发布文章《" + articleInfo.title + "》",
       date: new Date().getTime()
     }
     db.query(sql, data, (err, result) => {

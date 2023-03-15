@@ -15,5 +15,6 @@ router.get('/right/getinfo', routerRight.getInfo);
 
 
 
+
 // 暴露当前路由模块
 module.exports = router;

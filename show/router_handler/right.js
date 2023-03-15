@@ -6,9 +6,26 @@ const db = require('../../db/index');
 // 引入时间day.js
 const dayjs = require('dayjs');
 
-// 热门文章就扣处理函数
+// 热门文章处理函数
 exports.getHotArticle = (req,res) => {
-  
+  const sql = `select id,look_count,title,is_delete from article_table where is_delete=0
+  order by look_count desc limit 4`
+  const sqlTag = "select * from tag where is_delete=0"
+  const str = `select * from tag_relationship where is_delete=0`
+  new Promise((resolve, reject) => {
+    db.query(sql, (err, result) => {
+      if (err) reject(err)
+      resolve(result)
+    })
+  }).then(result => {
+    res.send({
+      code: 200,
+      message: "成功",
+      data: result
+    })
+  }).catch(e => {
+    res.cc(e)
+  })
 }
 
 // 博客信息接口处理函数

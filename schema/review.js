@@ -12,6 +12,7 @@ const joi = require('joi')
 // 分别定义 标题、分类Id、内容、发布状态的校验规则
 const content = joi.string().required().max(250)
 const article_id = joi.number()
+const title = joi.string()
 const time = joi.number()
 const name = joi.string().required().min(1).max(100)
 const email = joi.string().pattern(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/).max(100).allow('') 
@@ -24,6 +25,7 @@ exports.review_schema = {
   body: {
     content,
     article_id,
+    title,
     time,
     name,
     email,

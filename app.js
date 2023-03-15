@@ -114,6 +114,10 @@ app.use('/api', AccessRouter)
 const TimeRouter = require('./show/router/time')
 app.use('/api',TimeRouter)
 
+// 引入时间轴模块
+const HomeRouter = require('./show/router/home')
+app.use('/api',HomeRouter)
+
 
 // 定义错误级别中间件
 app.use((err, req, res, next) => {

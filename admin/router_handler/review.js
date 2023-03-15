@@ -28,7 +28,7 @@ exports.getReviewList = (req, res) => {
       result.forEach(el => {
         el.time = dayjs(el.time).format('YYYY年MM月DD日 HH:mm')
         article.forEach(it => {
-          if(el.article_id == it.id) el.article_id = it.title
+          if(el.article_id == it.id) el.titlt = it.title
         })
       })
       res.send({
@@ -58,11 +58,26 @@ exports.getReviewNum = (req, res) => {
 // 删除评论
 exports.delReview = (req, res) => {
   if (!decideRules(req.user.rules)) return res.cc('无权限')
-  const sql = `delete from review where id=${req.params.id}`
-  db.query(sql,(err,result) => {
-    if (err) res.cc(err) 
-    if(result.affectedRows == 1) res.cc("删除成功",200) 
+  const { id, article_id } = req.query
+  const sql = `delete from review where id=${id}`
+  const sqlArt = `update article_table set message_count=message_count-1 where id=${article_id}`
+  
+  new Promise((resolve, reject) => {
+    db.query(sql,(err,result) => {
+      if (err) reject(err) 
+      if(result.affectedRows == 1) resolve()
+    })
+  }).then(() => {
+    db.query(sqlArt,(err,result) => {
+      if (err) reject(err) 
+      res.cc("删除成功",200) 
+    })
+  }).catch(e => {
+    res.cc(e)
   })
+
+
+  
 }
 
 // 编辑评论
