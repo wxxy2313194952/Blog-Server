@@ -1,4 +1,4 @@
 node_modules
-uploads/articlecover/
-uploads/articlePicture/
+uploads/articlecover/*
+uploads/articlePicture/*
 config.js
