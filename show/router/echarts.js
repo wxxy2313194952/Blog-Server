@@ -11,6 +11,8 @@ const routerEcharts = require('../router_handler/echarts');
 router.get('/echarts/getuserdata', routerEcharts.getUserData);
 // 折线图表统计
 router.get('/echarts/getlinecharts', routerEcharts.getLineCharts);
+// 折线图表统计 IP
+router.get('/echarts/getlinechartsip', routerEcharts.getLineChartsIP);
 // 获取过去七天日期
 router.get('/echarts/getlastweek', routerEcharts.getLastWeek);
 // 饼图统计 用户行为

@@ -61,10 +61,10 @@ exports.getUserData = (req, res) => {
 
 // 接口处理函数 折线图表统计
 exports.getLineCharts = (req, res) => {
-  // 向前推七天 
-  const last7DateStr = dayjs().subtract(6, 'day').format('MM/DD/YYYY')
-  // 七天前的时间戳
-  const last7DateNum = Date.parse(last7DateStr)
+  // 向前推n天 
+  const lastDateStr = dayjs().subtract(req.query.day - 1, 'day').format('MM/DD/YYYY')
+  // n天前的时间戳
+  const lastDateNum = Date.parse(lastDateStr)
   const oneDayNum = 86400000
 
   function fun (time) {
@@ -76,29 +76,64 @@ exports.getLineCharts = (req, res) => {
       })
     })
   }
-  Promise.all([
-    fun(last7DateNum),
-    fun(last7DateNum + oneDayNum),
-    fun(last7DateNum + oneDayNum * 2),
-    fun(last7DateNum + oneDayNum * 3),
-    fun(last7DateNum + oneDayNum * 4),
-    fun(last7DateNum + oneDayNum * 5),
-    fun(last7DateNum + oneDayNum * 6),
-  ]).then((last7daysArr) => {
+  let arr = []
+  for (let i = 0; i < req.query.day; i++) {
+    arr.push(fun(lastDateNum + oneDayNum * i))
+  }
+  Promise.all(arr).then((lastdaysArr) => {
     res.send({
       code: 200,
       message: '成功',
-      data: last7daysArr
+      data: lastdaysArr
     })
   }).catch(err => {
     res.cc(err)
   })
 }
 
-// 获取前七天日期
+// 接口处理函数 折线IP统计
+exports.getLineChartsIP = (req, res) => {
+  // 向前推七天 
+  // 向前推n天 
+  const lastDateStr = dayjs().subtract(req.query.day - 1, 'day').format('MM/DD/YYYY')
+  // n天前的时间戳
+  const lastDateNum = Date.parse(lastDateStr)
+  const oneDayNum = 86400000
+
+  function fun (time) {
+    return new Promise((resolve, reject) => {
+      const sql = `select ip from access_info where time>${time} and time<${time + oneDayNum}`
+      db.query(sql, (err, result) => {
+        if (err) return reject(err)
+        let arr = []
+        result.forEach((it) => {
+          if (!arr.includes(it.ip)) {
+            arr.push(it.ip)
+          }
+        })
+        resolve(arr.length)
+      })
+    })
+  }
+  let arr = []
+  for (let i = 0; i < req.query.day; i++) {
+    arr.push(fun(lastDateNum + oneDayNum * i))
+  }
+  Promise.all(arr).then((lastdaysArr) => {
+    res.send({
+      code: 200,
+      message: '成功',
+      data: lastdaysArr
+    })
+  }).catch(err => {
+    res.cc(err)
+  })
+}
+
+// 获取前n天日期
 exports.getLastWeek = (req, res) => {
   let arr = []
-  for (let i = 6; i >= 1; i--) {
+  for (let i = req.query.day - 1; i >= 1; i--) {
     arr.push(dayjs().subtract(i, 'day').format('YYYY/MM/DD'))
   }
   arr.push(dayjs().format('YYYY/MM/DD'))
